@@ -1,20 +1,20 @@
 # env_soc_cog_space
 
-**Environmental Social Cognitive Space** – Projecte C++ multiplataforma (Linux, Windows, macOS).
+**Environmental Social Cognitive Space** – Cross-platform C++ project (Linux, Windows, macOS).
 
-## Requisits
+## Requirements
 
 - [CMake](https://cmake.org/) ≥ 3.14
-- Compilador C++17 (GCC, Clang, MSVC)
+- C++17 compiler (GCC, Clang, MSVC)
 
-## Compilació local
+## Local build
 
 ```bash
-# Configurar i compilar
+# Configure and build
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
-# Executar (Linux/macOS)
+# Run (Linux/macOS)
 ./build/env_soc_cog_space
 
 # Windows: build\Release\env_soc_cog_space.exe
@@ -22,22 +22,22 @@ cmake --build build
 
 ## CI/CD (GitHub Actions)
 
-El workflow [`.github/workflows/build.yml`](.github/workflows/build.yml) compila el projecte a:
+The workflow [`.github/workflows/build.yml`](.github/workflows/build.yml) builds the project on:
 
 - **Linux** (ubuntu-latest)
 - **Windows** (windows-latest)
 - **macOS** (macos-latest)
 
-S’executa en cada `push` i `pull_request` a les branques `main` i `master`. Els executables es publiquen com a *artifacts* de l’acció.
+It runs on every `push` and `pull_request` to the `main` and `master` branches. Executables are published as workflow *artifacts*.
 
-## Crear el repositori a GitHub
+## Creating the repository on GitHub
 
-1. Crea un repositori nou a [github.com/new](https://github.com/new):
-   - Nom: `env_soc_cog_space`
-   - Propietari: **jcanell4**
-   - Públic, sense inicialitzar amb README (ja en tens un al projecte)
+1. Create a new repository at [github.com/new](https://github.com/new):
+   - Name: `env_soc_cog_space`
+   - Owner: **jcanell4**
+   - Public, do not initialize with a README (you already have one in the project)
 
-2. Enllaça el projecte local i puja el codi:
+2. Link the local project and push the code:
 
 ```bash
 cd /home/josep/Dropbox/projecteRicard/colletive_intelligence/implementation/language_c/env_soc_cog_space
@@ -49,9 +49,9 @@ git remote add origin https://github.com/jcanell4/env_soc_cog_space.git
 git push -u origin main
 ```
 
-3. A **Actions** del repositori veuràs el workflow “Build (Linux, Windows, macOS)”. Després de cada push es generaran els executables per a les tres plataformes.
+3. Under **Actions** in the repository you will see the "Build (Linux, Windows, macOS)" workflow. After each push, executables for all three platforms will be generated.
 
-## Estructura
+## Structure
 
 ```
 env_soc_cog_space/
@@ -59,12 +59,12 @@ env_soc_cog_space/
 ├── README.md
 ├── .github/workflows/
 │   └── build.yml      # CI: Linux, Windows, macOS
-├── include/           # Capçaleres
+├── include/           # Headers
 ├── src/
 │   └── main.cpp
 └── .gitignore
 ```
 
-## Llicència
+## Licence
 
-A definir.
+To be defined.
