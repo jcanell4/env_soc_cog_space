@@ -1,6 +1,6 @@
-# col_com_env
+# env_soc_cog_space
 
-**Collective Communication Environment** – Projecte C++ multiplataforma (Linux, Windows, macOS).
+**Environmental Social Cognitive Space** – Projecte C++ multiplataforma (Linux, Windows, macOS).
 
 ## Requisits
 
@@ -15,9 +15,9 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 
 # Executar (Linux/macOS)
-./build/col_com_env
+./build/env_soc_cog_space
 
-# Windows: build\Release\col_com_env.exe
+# Windows: build\Release\env_soc_cog_space.exe
 ```
 
 ## CI/CD (GitHub Actions)
@@ -33,19 +33,19 @@ S’executa en cada `push` i `pull_request` a les branques `main` i `master`. El
 ## Crear el repositori a GitHub
 
 1. Crea un repositori nou a [github.com/new](https://github.com/new):
-   - Nom: `col_com_env`
+   - Nom: `env_soc_cog_space`
    - Propietari: **jcanell4**
    - Públic, sense inicialitzar amb README (ja en tens un al projecte)
 
 2. Enllaça el projecte local i puja el codi:
 
 ```bash
-cd /home/josep/Dropbox/projecteRicard/colletive_intelligence/implementation/language_c/col_com_env
+cd /home/josep/Dropbox/projecteRicard/colletive_intelligence/implementation/language_c/env_soc_cog_space
 git init
 git add .
-git commit -m "Initial commit: col_com_env C++ project with cross-platform build"
+git commit -m "Initial commit: env_soc_cog_space C++ project with cross-platform build"
 git branch -M main
-git remote add origin https://github.com/jcanell4/col_com_env.git
+git remote add origin https://github.com/jcanell4/env_soc_cog_space.git
 git push -u origin main
 ```
 
@@ -54,7 +54,7 @@ git push -u origin main
 ## Estructura
 
 ```
-col_com_env/
+env_soc_cog_space/
 ├── CMakeLists.txt
 ├── README.md
 ├── .github/workflows/
