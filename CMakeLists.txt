@@ -5,6 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# nlohmann/json
+include(FetchContent)
+FetchContent_Declare(json
+    GIT_REPOSITORY https://github.com/nlohmann/json.git
+    GIT_TAG v3.11.3
+)
+FetchContent_MakeAvailable(json)
+
 # Platform-specific settings
 if(WIN32)
     add_definitions(-DENV_SOC_COG_SPACE_PLATFORM_WINDOWS)
@@ -16,11 +24,18 @@ endif()
 
 add_executable(env_soc_cog_space
     src/main.cpp
+    src/LivingBeing.cpp
+    src/Autotroph.cpp
+    src/AutotrophByRates.cpp
+    src/Cohort.cpp
+    src/Niche.cpp
 )
 
 target_include_directories(env_soc_cog_space PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+target_link_libraries(env_soc_cog_space PRIVATE nlohmann_json::nlohmann_json)
 
 # Optional: install target
 install(TARGETS env_soc_cog_space RUNTIME DESTINATION bin)

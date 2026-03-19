@@ -56,6 +56,7 @@ git push -u origin main
 ```
 env_soc_cog_space/
 ├── CMakeLists.txt
+├── LICENSE            # MIT License
 ├── README.md
 ├── .github/workflows/
 │   └── build.yml      # CI: Linux, Windows, macOS
@@ -67,4 +68,4 @@ env_soc_cog_space/
 
 ## Licence
 
-To be defined.
+This project is licensed under the [MIT License](LICENSE).
