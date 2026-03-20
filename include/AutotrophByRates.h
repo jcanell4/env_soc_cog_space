@@ -2,6 +2,7 @@
 
 #include "Autotroph.h"
 #include <nlohmann/json_fwd.hpp>
+#include <tuple>
 #include <vector>
 
 /**
@@ -25,6 +26,12 @@ public:
     float getMaxGrowthRate() const;
     float getBaseDeathRate() const;
     const Tolerances& getTolerances() const;
+    double calculate_death_biomass(double total_biomass,
+                                   double accepted_growth) const override;
+
+    std::vector<std::tuple<int, double>> calculate_growth_biomass(
+        const Niche& niche,
+        double cohort_biomass) const override;
 
     void setMaxGrowthRate(float max_growth_rate);
     void setBaseDeathRate(float base_death_rate);

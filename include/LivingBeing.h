@@ -1,6 +1,10 @@
 #pragma once
 
 #include <string>
+#include <tuple>
+#include <vector>
+
+class Niche;
 
 /**
  * LivingBeing is the base type for all living entities in the ecosystem model.
@@ -13,6 +17,16 @@ public:
 
     const std::string& getName() const;
     float getEnergyContent() const;
+    virtual double calculate_death_biomass(double total_biomass,
+                                           double accepted_growth) const = 0;
+
+    /**
+     * Computes potential growth biomass terms for this species in the given niche.
+     * Each entry is (code, biomass_growth); concrete types define meaning of the int codes.
+     */
+    virtual std::vector<std::tuple<int, double>> calculate_growth_biomass(
+        const Niche& niche,
+        double cohort_biomass) const = 0;
 
 protected:
     LivingBeing() = default;
