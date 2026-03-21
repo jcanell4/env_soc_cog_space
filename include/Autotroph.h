@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file Autotroph.h
+ * @brief Abstract autotroph: tolerances, resilience, and environment coupling.
+ */
+
 #include "LivingBeing.h"
 
 #include <tuple>
@@ -8,7 +13,11 @@
 class Niche;
 
 /**
- * Autotroph is a living entity that produces its own food.
+ * @class Autotroph
+ * @brief Producer organism: extends @ref LivingBeing with tolerance vector and resilience.
+ *
+ * Remains abstract: @ref calculate_death_biomass and @ref calculate_growth_biomass must be
+ * implemented by concrete models (e.g. @ref AutotrophByRates).
  */
 class Autotroph : public LivingBeing {
 public:
@@ -30,30 +39,29 @@ public:
 
     virtual ~Autotroph() = default;
 
+    /** @brief Ideal environmental conditions per trait (each in [0,1]). */
     const std::vector<double>& getTolerances() const;
+    /** @brief Replace tolerances; values are clamped to [0,1]. */
     void setTolerances(std::vector<double> tolerances);
+
+    /** @return Resilience in [0,1] (mortality response to unmet growth potential). */
     double getResilience() const;
     void setResilience(double resilience);
 
     /**
-     * Computes environment sensitivity as described by:
-     * biological_potential / average(product(C, T))
-     * where C = niche conditions vector and T = autotroph tolerances vector.
+     * @brief Scalar mismatch between niche conditions and tolerances, scaled by niche potential.
+     *
+     * Uses normalized Euclidean distance between @p niche conditions and @ref tolerances_,
+     * divided by sqrt(dim), then multiplied by @ref Niche::getBiologicalPotential().
      */
     double getEnvironmentSensitivity(const Niche& niche) const;
 
     /**
-     * Computes distance between environment `conditions` (e.g. humidity, sun radiance)
-     * and this autotroph's `tolerances_` vector (same characteristics by position).
-     *
-     * Distance is computed as Euclidean (L2) norm.
+     * @brief L2 distance between parallel vectors @p conditions and @ref tolerances_.
+     * @return 0 if sizes differ or either vector is empty.
      */
     double distanceToEnvironmentConditions(const std::vector<double>& conditions) const;
 
-    /**
-     * Computes dead biomass contribution for the next step.
-     * Must be implemented by each concrete autotroph model.
-     */
     virtual double calculate_death_biomass(double total_biomass,
                                            double accepted_growth) const override = 0;
 

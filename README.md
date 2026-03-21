@@ -60,11 +60,44 @@ env_soc_cog_space/
 ├── README.md
 ├── .github/workflows/
 │   └── build.yml      # CI: Linux, Windows, macOS
-├── include/           # Headers
+├── include/           # Public API headers (documented below)
 ├── src/
 │   └── main.cpp
 └── .gitignore
 ```
+
+## API overview
+
+Public types live under `include/`. Headers use **Doxygen-style** comments (`@file`, `@class`, `@brief`, `@param`, `@return`) so you can generate HTML/LaTeX reference with [Doxygen](https://www.doxygen.nl/):
+
+```bash
+doxygen -g Doxyfile   # once: edit INPUT = include src, RECURSIVE = YES, etc.
+doxygen Doxyfile
+```
+
+### Class summary
+
+| Type | Header | Role |
+|------|--------|------|
+| **LivingBeing** | `LivingBeing.h` | Abstract species: name, energy per biomass, death & growth demand contracts. |
+| **Autotroph** | `Autotroph.h` | Abstract producer: tolerances, resilience, environment sensitivity vs niche conditions. |
+| **AutotrophByRates** | `AutotrophByRates.h` | Concrete autotroph with max growth rate, base death rate, tolerances; JSON constructor. |
+| **Cohort** | `Cohort.h` | Population of one species: living/dead biomass, `update_biomass`, `calculate_growth_demand`. |
+| **Niche** | `Niche.h` | Contains cohorts, nutrients, conditions; `step()` runs nutrient recycling and cohort updates. |
+| **Constants** | `Constants.h` | `NUTRIENTS_POS` — channel code for nutrient-limited growth tuples. |
+
+### Growth-demand tuple convention
+
+`LivingBeing::calculate_growth_biomass` / `Cohort::calculate_growth_demand` return `std::vector<std::tuple<int,double>>`:
+
+- **`NUTRIENTS_POS`** (`Constants.h`) — first int: demand competes for niche **nutrients** (autotroph path in `Niche::update_cohorts`).
+- **Negative `code`** — decomposer: donor cohort index = `-(code + 1)`.
+- **Non-negative `code`** (and not `NUTRIENTS_POS`) — heterotroph: prey cohort index = `code`.
+
+### Simulation flow (niche)
+
+1. **`Niche::update_nutrients`** — per cohort, move `return_rate × death_biomass` into `nutrients` and out of dead pool; then **`update_ecological_health`** with the nutrient delta.
+2. **`Niche::update_cohorts`** — random starting index, for each cohort resolve growth demand tuples and update nutrients / biomass transfers.
 
 ## Licence
 

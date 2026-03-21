@@ -1,12 +1,25 @@
 #pragma once
 
+/**
+ * @file Niche.h
+ * @brief Spatial/ecological unit: cohorts, nutrients, conditions, and timestep integration.
+ */
+
 #include "Cohort.h"
 #include <vector>
 
 /**
- * Niche models an ecological niche and its capacity to host living beings.
+ * @class Niche
+ * @brief Hosts a vector of @ref Cohort "cohorts", global nutrients, optional conditions, and rates.
  *
- * nutrients: quantity of inorganic nutrients available in this niche.
+ * @par Timestep (@ref step)
+ * 1. @ref update_nutrients — recycle dead biomass to nutrients per cohort.<br>
+ * 2. @ref update_cohorts — resolve growth demands in random rotation order.<br>
+ *
+ * @par Growth demand codes (int in each tuple)
+ * - @ref NUTRIENTS_POS — autotroph-style: competes for @ref nutrients.<br>
+ * - Negative codes — decomposer: donor cohort index = @c -(code + 1).<br>
+ * - Non-negative (not @ref NUTRIENTS_POS) — heterotroph: prey cohort index = @p code.
  */
 class Niche {
 public:
@@ -35,29 +48,34 @@ public:
     double getReturnRate() const;
     const std::vector<double>& getConditions() const;
 
-    /** Maximum niche potential: surface * biological_potential * ecological_health. */
+    /** @return surface * biological_potential * ecological_health (carrying capacity proxy). */
     double getMaxBiologicalPotential() const;
 
-    /** Sum of death_biomass over all cohorts in this niche. */
+    /** @brief Sum of @ref Cohort::getDeathBiomass over all cohorts. */
     double getDeathBiomass() const;
 
-    /** Sum of living biomass over all cohorts in this niche. */
+    /** @brief Sum of @ref Cohort::getBiomass over all cohorts. */
     double getLivingBiomass() const;
 
     /**
-     * Per cohort: adds return_rate * cohort.death_biomass to niche nutrients and removes
-     * that same mass from the cohort's death_biomass (recycling).
+     * @brief Recycle dead biomass to nutrients per cohort, then refresh ecological health.
+     *
+     * For each cohort: adds @c return_rate * death_biomass to @ref nutrients and calls
+     * @ref Cohort::decrement_death_biomass with the same amount. Then calls
+     * @ref update_ecological_health with the niche-level nutrient increment for the step.
      */
     void update_nutrients();
 
     /**
-     * Updates ecological_health from living species diversity using Pielou's evenness
-     * J = H' / ln(S) (clamped to [0, 1]), with H' from shannon_species_diversity and S
-     * the number of species with positive living biomass. If S < 2, sets health to 0.
+     * @brief Low-pass update of @ref ecological_health from Shannon diversity and recycling.
+     * @param recycling_increment Change in niche nutrients from the recycling pass (typically
+     *        positive after @ref update_nutrients).
+     *
+     * Combines @ref shannon_species_diversity (scaled) and recycling into a smoothed health value.
      */
     void update_ecological_health(double recycling_increment);
 
-    /** Advances this niche by one simulation timestep. */
+    /** @brief One simulation step: nutrients, then cohort growth resolution. */
     void step();
 
 private:
@@ -67,19 +85,18 @@ private:
     double nutrients;
     CohortSet cohort_set;
     double return_rate;
-    /**
-     * Niche environmental conditions encoded as normalized values in [0, 1].
-     * Examples: humidity, sun radiance, temperature, etc.
-     */
+    /** Normalized environmental traits in [0,1] (humidity, light, temperature, ...). */
     std::vector<double> conditions;
 
-    /** Random-order pass over cohorts: growth demand vs nutrients, death updates. */
+    /**
+     * @brief Visit cohorts in random rotation; apply @ref Cohort::calculate_growth_demand
+     *        and update nutrients / prey / donor pools per demand code.
+     */
     void update_cohorts();
 
     /**
-     * Shannon diversity index H' = -sum_i p_i ln(p_i) over species,
-     * where p_i is the proportion of living biomass of species i in this niche.
-     * Cohorts with the same specie name are pooled. Returns 0 if there is no living biomass.
+     * @brief Shannon index H' on living biomass shares by @ref Cohort::getSpecieName.
+     * @return 0 if there is no positive living biomass.
      */
     double shannon_species_diversity() const;
 };

@@ -1,5 +1,10 @@
 #pragma once
 
+/**
+ * @file Cohort.h
+ * @brief Population pool for one species reference: living and dead biomass.
+ */
+
 #include "LivingBeing.h"
 
 #include <tuple>
@@ -8,47 +13,54 @@
 class Niche;
 
 /**
- * Cohort represents a group of organisms of the same species.
+ * @class Cohort
+ * @brief One cohort: fixed @ref LivingBeing reference, mutable living and dead biomass.
  *
- * The species reference is fixed; biomass and death_biomass change only via the update methods below.
+ * Dynamics go through @ref update_biomass, @ref update_deaths, and @ref decrement_death_biomass.
+ * Growth demand is delegated to the species via @ref calculate_growth_demand.
  */
 class Cohort {
 public:
+    /**
+     * @param specie Species model (must outlive the cohort).
+     * @param biomass Initial living biomass.
+     * @param death_biomass Initial dead biomass pool for this cohort.
+     */
     Cohort(const LivingBeing& specie, double biomass, double death_biomass = 0.0);
 
-    // Returns the species name (read-only).
+    /** @return Name of the referenced species. */
     const std::string& getSpecieName() const;
 
-    // Returns total cohort energy (derived from species energy_content and biomass).
+    /** @brief Shorthand for @ref calculateEnergy(). */
     double getEnergy() const;
 
-    // Calculates the total cohort energy as: biomass * energy_content.
+    /** @return biomass * species energy_content. */
     double calculateEnergy() const;
 
-    // Returns cohort biomass (read-only).
     double getBiomass() const;
-
-    // Returns biomass of dead organisms in this cohort (read-only).
     double getDeathBiomass() const;
 
     /**
-     * Updates cohort biomass accounting: applies growth then death flux via the species'
-     * calculate_death_biomass(total_biomass, accepted_growth).
+     * @brief Apply accepted growth then species death model for this step.
+     * @param accepted_growth Mass added to living biomass before death flux is computed.
      */
     void update_biomass(double accepted_growth);
 
     /**
-     * Applies a direct death mass transfer: subtracts `deaths` from living biomass
-     * and adds the same amount to death_biomass.
+     * @brief Move mass from living to dead without using @ref calculate_death_biomass.
+     * @param deaths Amount to subtract from living and add to dead (capped by current biomass).
      */
     void update_deaths(double deaths);
 
-    /** Decreases death_biomass by `amount` (clamped so death_biomass does not go below 0). */
+    /**
+     * @brief Remove mass from the dead pool only (e.g. decomposition export).
+     * @param amount Subtracted from @ref death_biomass, floored at zero.
+     */
     void decrement_death_biomass(double amount);
 
     /**
-     * Returns the same vector of (code, biomass_growth) terms as the species'
-     * calculate_growth_biomass for this cohort's biomass.
+     * @brief Species growth demand for this cohort's current biomass.
+     * @return Same structure as @ref LivingBeing::calculate_growth_biomass.
      */
     std::vector<std::tuple<int, double>> calculate_growth_demand(const Niche& niche) const;
 
@@ -57,4 +69,3 @@ private:
     double biomass;
     double death_biomass;
 };
-

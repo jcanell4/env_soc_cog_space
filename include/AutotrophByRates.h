@@ -1,13 +1,21 @@
 #pragma once
 
+/**
+ * @file AutotrophByRates.h
+ * @brief Concrete autotroph parameterized by growth/death rates and JSON loading.
+ */
+
 #include "Autotroph.h"
 #include <nlohmann/json_fwd.hpp>
 #include <tuple>
 #include <vector>
 
 /**
- * AutotrophByRates models an autotroph using explicit rate parameters:
- * maximum growth rate, base death rate, and positional tolerance values.
+ * @class AutotrophByRates
+ * @brief Autotroph with explicit @em max_growth_rate, @em base_death_rate, and float tolerances.
+ *
+ * Growth demand terms use @ref NUTRIENTS_POS as the channel code for nutrient-limited growth.
+ * Tolerances are mirrored to the @ref Autotroph base as doubles for environment sensitivity.
  */
 class AutotrophByRates : public Autotroph {
 public:
@@ -20,15 +28,27 @@ public:
                      float base_death_rate,
                      Tolerances tolerances);
 
-    /** Construct from JSON keys: name, energy_content, max_growth_rate, base_death_rate, and tolerances (float array). */
+    /**
+     * @brief Parse from JSON: name, energy_content, max_growth_rate, base_death_rate, tolerances[].
+     */
     explicit AutotrophByRates(const nlohmann::json& j);
 
     float getMaxGrowthRate() const;
     float getBaseDeathRate() const;
+
+    /** @brief Tolerances as stored for this concrete type (float); base class holds double copy. */
     const Tolerances& getTolerances() const;
+
+    /**
+     * @brief Death biomass: base rate + resilience term from unmet potential growth.
+     * @see AutotrophByRates.cpp for full formula.
+     */
     double calculate_death_biomass(double total_biomass,
                                    double accepted_growth) const override;
 
+    /**
+     * @brief Single growth term: ( @ref NUTRIENTS_POS , potential growth after nutrient/space factors).
+     */
     std::vector<std::tuple<int, double>> calculate_growth_biomass(
         const Niche& niche,
         double cohort_biomass) const override;
