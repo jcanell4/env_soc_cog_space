@@ -94,7 +94,7 @@ double Niche::getLivingBiomass() const {
 }
 
 void Niche::update_nutrients() {
-    initial_nutrients = nutrients;
+    const double initial_nutrients = nutrients;
     for (auto& cohort : cohort_set) {
         const double death = cohort.getDeathBiomass();
         const double recycled = return_rate * death;
@@ -106,8 +106,8 @@ void Niche::update_nutrients() {
 
 void Niche::update_ecological_health(double recycling_increment) {
     const double h = shannon_species_diversity();
-    diversity_factor = h / 2.0;
-    recycling_factor = recycling_increment * 0.1;
+    const double diversity_factor = h / 2.0;
+    const double recycling_factor = recycling_increment * 0.1;
     ecological_health = ecological_health * 0.9  + 0.05 * diversity_factor + recycling_factor * 0.05;
 }
 
